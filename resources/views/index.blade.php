@@ -1,4 +1,14 @@
 <x-layout>
+    @if (session('success'))
+        <div 
+        x-data="{ show: true }" 
+        x-init="setTimeout(() => show = false, 2000)" 
+        x-show="show" 
+        x-transition
+        class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50">
+            {{ session('success') }}
+        </div>
+    @endif
     <section class="relative h-screen">
         <!-- Imagem de fundo com opacidade -->
         <div class="absolute inset-0 md:hidden"
@@ -13,7 +23,7 @@
         <div class="relative z-10 flex flex-col items-center justify-center h-full p-8 text-center bg-black/50">
             <h1 class="text-4xl font-bold text-white mb-4">Bem-vindo ao AngoClothes</h1>
             <p class="text-gray-200 mb-6">Sua loja de roupas online favorita!</p>
-            <a href="/produtos" class="border text-white px-6 py-2 rounded hover:bg-gray-200/20 transition">
+            <a href="/products" class="border text-white px-6 py-2 rounded hover:bg-gray-200/20 transition">
                 Ver Produtos
             </a>
         </div>
@@ -23,51 +33,42 @@
 
         <div class="swiper">
             <div class="swiper-wrapper">
-                <x-card-categorie title="Calças" image="/images/jeans.jpg" />
-                <x-card-categorie title="Camisas" image="/images/desktop.jpg" />
-                <x-card-categorie title="Plovers" image="/images/mol.jpg" />
+                @foreach ($categories as $category)
+                    <x-card-categorie :title="$category->name" :image="$category->image" />
+                @endforeach
             </div>
         </div>
     </section>
     <section class="container h-full md:max-w-[80vw] md:mx-auto p-4">
         <h2 class="text-2xl font-semibold mb-2">Produtos em Destaque</h2>
         <div class="grid grid-cols-1 gap-4">
-
-            <div>
-                <h2 class="text-xl font-bold mb-4">Camisas</h2>
-                <div class="swiper product-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <x-produto url="/product" title="Camisa Social" image="/images/desktop.jpg"
-                                price="R$ 89,90" />
-                        </div>
-                        <div class="swiper-slide">
-                            <x-produto title="Camisa Casual" image="/images/casual.jpg" price="R$ 79,90" />
-                        </div>
-                        <div class="swiper-slide">
-                            <x-produto title="Camisa Slim" image="/images/slim.jpg" price="R$ 99,90" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h2 class="text-xl font-bold mb-4">Jeans</h2>
-                <div class="swiper product-swiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <x-produto title="Camisa Social" image="/images/jeans.jpg" price="R$ 89,90" />
-                        </div>
-                        <div class="swiper-slide">
-                            <x-produto title="Camisa Casual" image="/images/casual.jpg" price="R$ 79,90" />
-                        </div>
-                        <div class="swiper-slide">
-                            <x-produto title="Camisa Slim" image="/images/slim.jpg" price="R$ 99,90" />
+            @foreach ($categories as $category)
+                <div>
+                    <h2 class="text-xl font-bold mb-4">{{ $category->name }}</h2>
+                    <div class="swiper product-swiper">
+                        <div class="swiper-wrapper">
+                            @foreach ($category->products as $product)
+                                <div class="swiper-slide">
+                                    <div class="bg-white rounded-lg shadow p-4">
+                                        <x-produto url="/product/{{ $product->id }}" title="{{ $product->name }}"
+                                            image="{{ $product->image }}" price="{{ $product->price }}" />
+                                        <div>
+                                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                                @csrf
+                                                <button
+                                                    class="bg-black text-white hover:bg-gray-800 transition-colors px-4 py-2 rounded block">
+                                                    <i class="fas fa-cart-plus mr-2"></i>
+                                                    Add to Cart
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
-            </div>
-
+            @endforeach
         </div>
     </section>
     <section class="bg-gray-100 py-12">

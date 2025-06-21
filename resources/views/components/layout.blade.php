@@ -10,6 +10,7 @@
         integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -20,10 +21,23 @@
         </div>
 
         <div>
+            @php
+                $cart = session('carrinho', []);
+                $totalItems = array_sum(array_column($cart, 'quantity'));
+            @endphp
             <nav class="hidden md:flex space-x-4 items-center">
                 <x-nav-link href="/">Home</x-nav-link>
                 <x-nav-link href="/products">Produtos</x-nav-link>
-                <x-nav-link href="carrinho"><i class="fa-solid fa-cart-shopping"></i> Carrinho</x-nav-link>
+                <x-nav-link href="/carrinho" class="relative flex items-center gap-1">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    Carrinho
+                    @if ($totalItems > 0)
+                        <span
+                            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-ping-slow">
+                            {{ $totalItems }}
+                        </span>
+                    @endif
+                </x-nav-link>
                 <x-nav-link type="button">Login</x-nav-link>
             </nav>
         </div>
