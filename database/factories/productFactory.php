@@ -8,7 +8,7 @@ use App\Models\Category;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\product>
  */
-class productFactory extends Factory
+class ProductFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,7 @@ class productFactory extends Factory
     public function definition(): array
     {
         return [
-           'category_id' => Category::factory(),
+           'category_id' => Category::inRandomOrder()->first()->id ?? 1,
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'price' => $this->faker->randomFloat(2, 1, 1000),
